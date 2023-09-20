@@ -55,7 +55,7 @@ public class TestCurso {
 		assertEquals(horario, curso.getHorario());
 		assertEquals(ciclo, curso.getCiclo());
 		assertEquals(aula, curso.getAula());
-		
+		 
 		
 	}
 

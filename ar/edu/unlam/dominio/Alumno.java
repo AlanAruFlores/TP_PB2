@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Alumno {
 
 		private Integer dni;
-		private String nombre;
+		private String nombre; 
 		private String apellido;
 		private Date fechaNacimiento;
 		private Date fechaIngreso;

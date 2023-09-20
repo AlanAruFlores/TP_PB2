@@ -1,7 +1,8 @@
 package ar.edu.unlam.dominio;
 import java.util.ArrayList;
 import ar.edu.unlam.utils.Dia;
-import ar.edu.unlam.utils.Turno;;
+import ar.edu.unlam.utils.Turno;
+
 public class Horario {
 	
 	private ArrayList<Dia> dias;
@@ -16,6 +17,6 @@ public class Horario {
 		return this.dias;
 	}
 	public Turno getTurno() {
-		return this.turno;
+		return this.turno; 
 	}
 }

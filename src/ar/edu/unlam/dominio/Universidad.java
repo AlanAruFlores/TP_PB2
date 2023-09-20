@@ -306,7 +306,143 @@ public class Universidad {
 		return false;
 	}
 
+	private ArrayList<Curso> obtenerCursosPorProfesor(Integer dni) {
+		Profesor aux = new Profesor(dni);
+		ArrayList<Curso> cursosSeleccionados  = new ArrayList<>();
+		for(int i = 0 ; i<this.asignacionesCP.size(); i++) {
+			if(this.asignacionesCP.get(i).getProfesor().equals(aux)) {
+				cursosSeleccionados.add(this.asignacionesCP.get(i).getCurso());
+			}
+		}
+		return cursosSeleccionados;
+	}
 
+
+	/**
+	 * Se encarga de inscribir el alumno a un curso
+	 * @param dni --> identificador del alumno 
+	 * @param codigoCurso --> identificador del curso
+	 * @return retorna un true si se pudo incribir, sino un false
+	 */
+	public Boolean inscribirAlumnoACurso(Integer dni, Integer codigoCurso)
+	{
+		Alumno alumno = buscarAlumnoPorDNI(dni);
+		Curso curso = buscarCursoPorCodigo(codigoCurso);
+		
+		if(alumno == null || curso == null)
+			return false;
+		
+		Boolean resultado = verificarSiAproboCorreleativas(alumno.getDni(), curso.getMateria());
+		
+		if(resultado != true)
+			return false;
+		
+		Boolean estaLleno = verificarSiAulaEstaLleno(curso);
+		
+		if(estaLleno)
+			return false;
+			
+		CursoAlumno nueva = new CursoAlumno(codigoCurso, curso, alumno);
+		this.asignacionesCA.add(nueva);	
+		return true;
+	}
+	
+	/**
+	 * Se encarga de ver si el aula de dicho curso esta lleno
+	 * @param curso
+	 * @return retorna true si esta lleno y no si es false
+	 */
+	private Boolean verificarSiAulaEstaLleno(Curso curso) {
+		Aula aula = curso.getAula();
+		Integer cantidadAlumnos = calcularCantidadDeAlumnos(curso);
+		return aula.getCapacidad() <= cantidadAlumnos;
+	}
+	
+	
+	private Integer calcularCantidadDeAlumnos(Curso curso) {
+		Integer cantidad = 0;
+		for(int i  = 0 ; i < this.asignacionesCA.size(); i++) {
+			if(this.asignacionesCA.get(i).getCurso().equals(curso)) {
+				cantidad++;
+			}
+		}
+		return cantidad;
+	}
+
+	/**
+	 * Verifica si el alumno aprobo las correleativas de una materia
+	 * @param dni --> identificador del alumno
+	 * @param materiaAInscribir --> objeto de la materia a evaluar las correleativas
+	 * @return retorna true si aprobo , sino false
+	 */
+	private Boolean verificarSiAproboCorreleativas(Integer dni, Materia materiaAInscribir) {
+		ArrayList<Materia> correleativas = materiaAInscribir.getCorreleativas();
+		if(correleativas.size() == 0)
+			return true;
+		
+		
+		for(int i = 0 ; i<correleativas.size(); i++) 
+			if(aprobo(correleativas.get(i), dni) != true) 
+				return false;			
+	
+		return true;
+	}
+	
+	private boolean aprobo(Materia materia, Integer dni) {
+		CursoAlumno asignacionAlumno = buscarAsignacionPorAlumnoMateria(materia,dni);
+		
+		if(asignacionAlumno == null) // Verifico si le falto cursar alguna correleativa
+			return false;
+		
+		if(!(asignacionAlumno.estaCursando()))
+			return false;
+		
+		return true;
+	}
+	
+	/*GETTERS */
+	public ArrayList<CursoProfesor> getAsignacionesProfeCurso() {
+		return this.asignacionesCP;
+	}
+
+	
+	public String getNombre() {
+		return this.nombreUniversidad;
+	}
+	
+	public ArrayList<Materia> getMaterias() {
+		return this.materias;
+	}
+
+	public ArrayList<Alumno> getAlumnos() {
+		return this.alumnos;
+	}
+	
+	public ArrayList<Curso> getCursos() {
+		return this.cursos;
+	}
+
+	public ArrayList<Profesor> getProfesores() {
+		return this.profesores;
+	}
+
+
+	/**
+	 * Metodo que se encarga de eliminar las correleativas de una materia
+	 * @param codMateria --> identificador de la materia
+	 * @param codCorreleativa --> identificador de la materia correleativa
+	 * @return retorna true si se elimino, sino false
+	 */
+	public Boolean eliminarCorreleativaMateria(Integer codMateria, Integer codCorreleativa) {
+		Materia correleativa = buscarMateriaPorCodigo(codCorreleativa);
+		Materia materia  = buscarMateriaPorCodigo(codMateria);
+		
+		if(correleativa == null || materia == null)
+			return false;
+		
+		Boolean resultado = materia.eliminarCorreleativa(correleativa);
+		return resultado;
+	}
 
 	
 }

@@ -1,10 +1,4 @@
 package ar.edu.unlam.dominio;
-<<<<<<< HEAD
-
-public class Alumno {
-
-}
-=======
 import java.util.Date;
 import java.util.Objects;
 
@@ -69,5 +63,3 @@ public class Alumno {
 		
 
 	}
-
->>>>>>> rama_alan

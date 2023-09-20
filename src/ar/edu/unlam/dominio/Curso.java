@@ -1,7 +1,6 @@
 package ar.edu.unlam.dominio;
 
 import java.util.Objects;
-import ar.edu.unlam.utils.Turno;
 
 public class Curso {
 

@@ -134,7 +134,6 @@ public class Universidad {
 		}
 		return false;
 	}
- 
 
 	private ArrayList<Curso> buscarCursosDeUnAula(Aula aula) {
 		ArrayList<Curso> cursosAula =  new ArrayList<>();
@@ -276,7 +275,7 @@ public class Universidad {
 		for(int i = 0; i<cursosDelProfe.size(); i++) {
 			if( cursosDelProfe.get(i).getCiclo().equals(curso.getCiclo())
 					&& estaOcupado(curso, cursosDelProfe.get(i)) ){
-				return true; 
+				return true;
 			}
 		}
 		return false;
@@ -305,6 +304,7 @@ public class Universidad {
 		
 		return false;
 	}
+
 
 	private ArrayList<Curso> obtenerCursosPorProfesor(Integer dni) {
 		Profesor aux = new Profesor(dni);
@@ -442,6 +442,7 @@ public class Universidad {
 		
 		Boolean resultado = materia.eliminarCorreleativa(correleativa);
 		return resultado;
+
 	}
 
 	

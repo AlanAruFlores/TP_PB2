@@ -16,6 +16,12 @@ public class Profesor {
 	public Profesor(Integer dni) {
 		this.dni = dni;
 	}
+
+	public Profesor(Integer dni, String nombre, String apellido) {
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.dni = dni; 
+	}	
 	
 	public Profesor(String nombre, String apellido, Integer dni, Date fechaNac) {
 		this.nombre = nombre;

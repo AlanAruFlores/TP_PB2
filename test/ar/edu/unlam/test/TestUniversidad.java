@@ -1,4 +1,4 @@
-package ar.com.unlam.test;
+package ar.edu.unlam.test;
 
 import static org.junit.Assert.*;
 

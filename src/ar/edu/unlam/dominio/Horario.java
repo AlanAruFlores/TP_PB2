@@ -18,4 +18,14 @@ public class Horario {
 	public Turno getTurno() {
 		return this.turno;
 	}
+
+	public void setDias(ArrayList<Dia> dias) {
+		this.dias = dias;
+	}
+
+	public void setTurno(Turno turno) { 
+		this.turno = turno;
+	}
+	
+	
 }

@@ -16,6 +16,7 @@ public class Profesor {
 	public Profesor(Integer dni) {
 		this.dni = dni;
 	}
+
 	public Profesor(Integer dni, String nombre, String apellido) {
 		this.nombre = nombre;
 		this.apellido = apellido;

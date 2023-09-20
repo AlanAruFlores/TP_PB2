@@ -135,7 +135,6 @@ public class Universidad {
 		return false;
 	}
 
-
 	private ArrayList<Curso> buscarCursosDeUnAula(Aula aula) {
 		ArrayList<Curso> cursosAula =  new ArrayList<>();
 		for(Curso c : this.cursos) {
@@ -443,6 +442,8 @@ public class Universidad {
 		
 		Boolean resultado = materia.eliminarCorreleativa(correleativa);
 		return resultado;
-	}	
+
+	}
+
 	
 }

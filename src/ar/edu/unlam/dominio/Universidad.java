@@ -15,6 +15,7 @@ public class Universidad {
 	private ArrayList<Aula> aulas;
 	private ArrayList<CursoProfesor> asignacionesCP;
 	private ArrayList<CursoAlumno> asignacionesCA;
+	private ArrayList<Materia> planDeEstudios;
 
 	public Universidad(String nombreUniversidad) {
 		this.nombreUniversidad = nombreUniversidad;
@@ -279,16 +280,47 @@ public class Universidad {
 		}
 		return null;
 	}
+	
+	public void asignarPlanDeEstudios(ArrayList<Materia> planDeEstudios) {
+		this.planDeEstudios = planDeEstudios;
+	}
+	
+	public ArrayList<Materia> obtenerPlanDeEstudios() {
+		return planDeEstudios; 
+	}
+	
+	public ArrayList<Materia> obtenerMateriasQueFaltanCursarParaUnAlumno(Integer alumnoDni) {
+		Alumno alumno = buscarAlumnoPorDNI(alumnoDni);
+		ArrayList<Materia> aprobadasAlumno = alumno.getMateriasAprobadasPorAlumno();
+		ArrayList<Materia> faltanCursar = new ArrayList<>();
+		for (int i = 0; i < aprobadasAlumno.size(); i++) {
+			for (int j = 0; j < this.planDeEstudios.size(); j++) {
+				if(this.planDeEstudios.get(j).equals(aprobadasAlumno.get(i))) {
+					faltanCursar.add(planDeEstudios.get(j));
+				}
+			}
+		} 
+		return faltanCursar; 
+	}
 
-	private boolean aprobo(Materia materia, Integer dni) {
+	public ArrayList<Materia> obtenerMateriasAprobadasParaUnAlumno(Integer alumnoDni) {
+		Alumno aprobadasAlumno = buscarAlumnoPorDNI(alumnoDni);
+		return aprobadasAlumno.getMateriasAprobadasPorAlumno(); 
+	}
+
+	private boolean aprobo(Materia materia, Integer dni) { 
 		CursoAlumno asignacionAlumno = buscarAsignacionPorAlumnoMateria(materia, dni);
 
-		if (asignacionAlumno == null) // Verifico si le falto cursar alguna correleativa
+		if (asignacionAlumno == null) { // Verifico si le falto cursar alguna correleativa
 			return false;
-
-		if (!(asignacionAlumno.estaCursando())) // Si no la Promociono o no la Aprobo
+		}
+		if (!(asignacionAlumno.estaCursando())) { // Si no la Promociono o no la Aprobo
 			return false;
-
+		}
+		
+		Alumno alumnoAprob = buscarAlumnoPorDNI(dni);
+		alumnoAprob.agregarMateriaAprobadaAlArray(materia); 
+		
 		return true;
 	}
 

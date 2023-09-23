@@ -1987,5 +1987,19 @@ public class TestUniversidad {
 		assertNull(pb1Profe);
 	}
 	
-	
+	@Test
+	public void queSePuedaAsignarPlanDeEstudios() {
+		Universidad uni = new Universidad("UNLAM");
+		Materia materia1 = new Materia(1, "pb1");
+		Materia materia2 = new Materia(2, "pb2");
+		Materia materia3 = new Materia(3, "tallerWeb1");
+		ArrayList<Materia> planDeEstudios= new ArrayList<>();
+		planDeEstudios.add(materia1);
+		planDeEstudios.add(materia2);
+		planDeEstudios.add(materia3);
+		
+		uni.asignarPlanDeEstudios(planDeEstudios);
+		
+		assertEquals(uni.obtenerPlanDeEstudios(), planDeEstudios);
+	}
 }

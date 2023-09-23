@@ -1,4 +1,5 @@
 package ar.edu.unlam.dominio;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
 
@@ -9,6 +10,7 @@ public class Alumno {
 		private String apellido;
 		private Date fechaNacimiento;
 		private Date fechaIngreso;
+		private ArrayList<Materia> materiasAprobadasPorAlumno;
 		
 		
 		public Alumno(Integer dni) {
@@ -21,6 +23,10 @@ public class Alumno {
 			this.apellido = apellido;
 			this.fechaNacimiento = fechaNacimiento;
 			this.fechaIngreso = fechaIngreso;
+		}
+		
+		public void agregarMateriaAprobadaAlArray(Materia materiaAprob) {
+			materiasAprobadasPorAlumno.add(materiaAprob);
 		}
 
 		public Integer getDni() {
@@ -42,6 +48,14 @@ public class Alumno {
 		public Date getFechaIngreso() {
 			return this.fechaIngreso;
 		}
+		
+		public ArrayList<Materia> getMateriasAprobadasPorAlumno() {
+			return materiasAprobadasPorAlumno;
+		}
+
+		public void setMateriasAprobadasPorAlumno(ArrayList<Materia> materiasAprobadasPorAlumno) {
+			this.materiasAprobadasPorAlumno = materiasAprobadasPorAlumno;
+		}
 
 		@Override
 		public int hashCode() {
@@ -59,7 +73,5 @@ public class Alumno {
 			Alumno other = (Alumno) obj;
 			return Objects.equals(dni, other.dni);
 		}
-
-		
 
 	}

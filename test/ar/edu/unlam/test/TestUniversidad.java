@@ -7,20 +7,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import ar.edu.unlam.dominio.Alumno;
-import ar.edu.unlam.dominio.CursoAlumno;
-import ar.edu.unlam.dominio.CursoProfesor;
-import ar.edu.unlam.dominio.Aula;
-import ar.edu.unlam.dominio.CicloLectivo;
-import ar.edu.unlam.dominio.Curso;
-import ar.edu.unlam.dominio.Horario;
-import ar.edu.unlam.dominio.Materia;
-import ar.edu.unlam.dominio.Nota;
-import ar.edu.unlam.dominio.Profesor;
-import ar.edu.unlam.dominio.Universidad;
-import ar.edu.unlam.utils.Dia;
-import ar.edu.unlam.utils.TipoNota;
-import ar.edu.unlam.utils.Turno;
+import ar.edu.unlam.dominio.*;
+import ar.edu.unlam.utils.*;
 
 @SuppressWarnings("deprecation")
 public class TestUniversidad {

@@ -1,67 +1,51 @@
 package ar.edu.unlam.dominio;
 
-import java.util.Date;
+import java.util.Objects;
 
 public class Profesor {
 
+	private Integer dni;
 	private String nombre;
 	private String apellido;
-	private Integer dni;
-	private Date fechaNac;
-	
-	public Profesor() {
-		
-	}
-	
+
 	public Profesor(Integer dni) {
 		this.dni = dni;
 	}
-
 	public Profesor(Integer dni, String nombre, String apellido) {
+		this.dni = dni;
 		this.nombre = nombre;
-		this.apellido = apellido;
-		this.dni = dni; 
-	}	
-	
-	public Profesor(String nombre, String apellido, Integer dni, Date fechaNac) {
-		this.nombre = nombre;
-		this.apellido = apellido;
-		this.dni = dni; 
-		this.fechaNac = fechaNac; 
-	}
-
-	public String getNombre() {
-		return nombre;
-	}
-
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	public String getApellido() {
-		return apellido;
-	}
-
-	public void setApellido(String apellido) {
-		this.apellido = apellido;
+		this.apellido  = apellido;
 	}
 
 	public Integer getDni() {
-		return dni;
+		return this.dni;
 	}
 
-	public void setDni(Integer dni) {
-		this.dni = dni;
+	public String getNombre() {
+		return this.nombre;
 	}
 
-	public Date getFechaNac() {
-		return fechaNac;
+	public String getApellido() {
+		return this.apellido;
 	}
 
-	public void setFechaNac(Date fechaNac) { 
-		this.fechaNac = fechaNac;
+	@Override
+	public int hashCode() {
+		return Objects.hash(dni);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Profesor other = (Profesor) obj;
+		return Objects.equals(dni, other.dni);
 	}
 	
 	
-	
+
 }

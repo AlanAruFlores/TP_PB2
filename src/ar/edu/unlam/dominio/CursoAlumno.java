@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import ar.edu.unlam.utils.TipoNota;
 
 public class CursoAlumno {
-
+	
 	private Integer id;
 	private Curso curso;
 	private Alumno alumno;
@@ -15,7 +15,7 @@ public class CursoAlumno {
 		this.id = id;
 		this.curso = curso;
 		this.alumno = alumno;
-		this.notas = new AlumnoNotas(); 
+		this.notas = new AlumnoNotas();
 	}
 
 	public Curso getCurso() {
@@ -36,7 +36,7 @@ public class CursoAlumno {
 	public Double obtenerNotaFinal() {
 		ArrayList<Nota> notasRelevantes = obtenerNotasRelevantes();
 		Double  promedio = 0.0;
-		Integer suma = 0;
+		Double suma = 0.0;
 		
 		for(int i = 0; i<notasRelevantes.size(); i++) 
 			suma += notasRelevantes.get(i).getPuntaje();
@@ -61,7 +61,7 @@ public class CursoAlumno {
 				notaMayor = obtenerNotaMayorRecuperatorio(this.notas.getSegundoParcial(), this.notas.getRecuperatorio());
 			
 			}
-			notasRelevantes.add(notaMayor);
+			notasRelevantes.add(notaMayor);			
 		}else { //EN CASO DE QUE PROMOCIONO O NO APROBO LOS DOS PARCIALES CON UN MINIMO DE 4 (RECURSA)
 			notasRelevantes.add(this.notas.getPrimerParcial());
 			notasRelevantes.add(this.notas.getSegundoParcial());
@@ -80,10 +80,13 @@ public class CursoAlumno {
 	}
 	
 	public boolean estaPromocionado() {
+		/*
 		return (this.notas.getPrimerParcial().getPuntaje()>=7 
 				&& this.notas.getSegundoParcial().getPuntaje()>= 7);
+				*/
+		
+		return obtenerNotaFinal() >= 7;
 	}
-	
 	
 	private Nota obtenerNotaMayorRecuperatorio(Nota parcial, Nota recu) {
 		Nota aux = null;
@@ -97,4 +100,6 @@ public class CursoAlumno {
 	public Boolean asignarNota(Nota nota) {
 		return this.notas.calificar(nota.getTipoNota(), nota.getPuntaje());
 	}
+
+	
 }

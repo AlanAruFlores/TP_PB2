@@ -4,7 +4,6 @@ import ar.edu.unlam.utils.Dia;
 import ar.edu.unlam.utils.Turno;
 
 public class Horario {
-	
 	private ArrayList<Dia> dias;
 	private Turno turno;
 	

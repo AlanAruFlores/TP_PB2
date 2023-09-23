@@ -1,9 +1,9 @@
 package ar.edu.unlam.dominio;
 
 import java.util.ArrayList;
+import java.util.Date;
 
-import ar.edu.unlam.utils.Dia;
-import ar.edu.unlam.utils.Turno;
+import ar.edu.unlam.utils.*;
 
 public class Universidad {
 
@@ -50,12 +50,32 @@ public class Universidad {
 	public Boolean  crearCurso(Curso curso) {
 		Materia existeMateria = buscarMateriaPorCodigo(curso.getMateria().getCodigo());
 		Curso existeCurso = buscarCursoPorCodigo(curso.getCodigo());
-		if(existeMateria != null && existeCurso == null) {
-			this.cursos.add(curso);
-			return true;
+		
+		if(existeMateria == null || existeCurso != null) 
+			return false;
+		
+		Boolean resultado  = verificarSiExisteCursoIdentico(curso);
+		
+		if(resultado)
+			return false;
+		
+		this.cursos.add(curso);
+		return true;
+	}
+	
+	private Boolean verificarSiExisteCursoIdentico(Curso curso) {
+
+		for(Curso c : this.cursos) {
+			if(c.getMateria().getNombre().equals(curso.getMateria().getNombre())
+				&& c.getCiclo().equals(curso.getCiclo())
+				&& c.getHorario().getTurno().equals(curso.getHorario().getTurno())) {
+				return true;
+			}
 		}
 		return false;
 	}
+
+
 	public Boolean registrarProfesor(Profesor profesor) {
 		Profesor existe  = buscarProfesorPorDNI(profesor.getDni());
 	
@@ -114,7 +134,7 @@ public class Universidad {
 	
 	private Boolean verificarSiAulaEstaOcupada(Aula aula, Curso curso) {
 		ArrayList<Curso> cursosDelAula = buscarCursosDeUnAula(aula);
-		System.out.println(cursosDelAula.size());
+		//System.out.println(cursosDelAula.size());
 		if(cursosDelAula.size() == 0)
 			return false;
 
@@ -135,6 +155,7 @@ public class Universidad {
 		return false;
 	}
 
+
 	private ArrayList<Curso> buscarCursosDeUnAula(Aula aula) {
 		ArrayList<Curso> cursosAula =  new ArrayList<>();
 		for(Curso c : this.cursos) {
@@ -153,15 +174,66 @@ public class Universidad {
 		if(curso == null || profesor == null)
 			return false;
 		
-		Boolean resultado  = verificarSiEstaOcupado(curso,profesor);
-		
-		if(resultado)
+		Integer cantidadDeAlumnos = calcularCantidadDeAlumnos(curso);
+		if(curso.getAula() == null || cantidadDeAlumnos<=0) // Si no existe un aula asignada , no se podra asignar el profe
 			return false;
 		
-		CursoProfesor nuevo = new CursoProfesor(curso, profesor);
-		this.asignacionesCP.add(nuevo);
+		//Verifica que no se asigne el mismo docente 2 veces en el mismo curso
+		Boolean estaRepetido = verificarSiSeAsignaProfesorMasDeUnaVez(profesor,curso);
+		if(estaRepetido)
+			return false;
+		
+		Boolean estaOcupado  = verificarSiEstaOcupado(curso,profesor);
+		if(estaOcupado)
+			return false;
+		
+		Boolean seNecesitaPersonal = verificarSiSeNecesitaProfesor(cantidadDeAlumnos, curso);
+		if(seNecesitaPersonal != true)
+			return false;
+			
+		
+		agregarDocentesAComision(profesor, curso);
 		return true;
 	}
+	
+	private Boolean verificarSiSeAsignaProfesorMasDeUnaVez(Profesor profesor, Curso curso) {
+		CursoProfesor cp = buscarAsignacionProfesorPorCursoProfe(curso, profesor);
+		return cp != null;
+	}
+
+
+	private void agregarDocentesAComision(Profesor profesor, Curso curso) {
+		CursoProfesor nuevo = new CursoProfesor(curso, profesor);
+		this.asignacionesCP.add(nuevo);
+	}
+
+	/**
+	 * Metodo que se encarga de verificar si falta profesores
+	 * Por cada 20 alumnos se asigna un profesor 
+	 * @param cantidadDeAlumnos 
+	 * @param curso 
+	 * @return retorna un true si se necesita un profesor, en caso contrario false
+	 */
+	private Boolean verificarSiSeNecesitaProfesor(Integer cantidadDeAlumnos, Curso curso) {
+		Integer cantidadProfesores = calcularCantidadProfesoresPorCurso(curso);	
+		return (cantidadDeAlumnos > (cantidadProfesores*20));
+	}
+
+
+	/**
+	 * Metodo encargado de calcular la cantidad de profesores en un curso
+	 * @param curso
+	 * @return retorna la cantidad de profesores
+	 */
+	private Integer calcularCantidadProfesoresPorCurso(Curso curso) {
+		Integer cantidad = 0;
+		for(CursoProfesor c : asignacionesCP) {
+			if(c.getCurso().equals(curso))
+				cantidad++;
+		}
+		return cantidad;
+	}
+
 
 	/**
 	 * Metodo encargado de registrar la nota de un alumno
@@ -177,6 +249,7 @@ public class Universidad {
 		if(alumno == null || curso == null)
 			return false;
 		
+	
 		CursoAlumno cursoAlumno  = buscarAsignacionAlumnoPorAlumnoCurso(alumno, curso);
 		
 		if(cursoAlumno == null)
@@ -324,7 +397,7 @@ public class Universidad {
 	 * @param codigoCurso --> identificador del curso
 	 * @return retorna un true si se pudo incribir, sino un false
 	 */
-	public Boolean inscribirAlumnoACurso(Integer dni, Integer codigoCurso)
+	public Boolean inscribirAlumnoACurso(Integer dni, Integer codigoCurso,Date fechaInscripcion)
 	{
 		Alumno alumno = buscarAlumnoPorDNI(dni);
 		Curso curso = buscarCursoPorCodigo(codigoCurso);
@@ -332,8 +405,12 @@ public class Universidad {
 		if(alumno == null || curso == null)
 			return false;
 		
-		Boolean resultado = verificarSiAproboCorreleativas(alumno.getDni(), curso.getMateria());
+		Boolean estaDentroDeLaFecha = verificarSiDentroDeLaFecha(fechaInscripcion, curso);
+		if(estaDentroDeLaFecha != true)
+			return false;
 		
+		
+		Boolean resultado = verificarSiAproboCorreleativas(alumno.getDni(), curso.getMateria());
 		if(resultado != true)
 			return false;
 		
@@ -347,9 +424,18 @@ public class Universidad {
 		return true;
 	}
 	
+	private Boolean verificarSiDentroDeLaFecha(Date fechaInscripcion, Curso curso) {
+		Date fechaInicioInscripcion  = curso.getCiclo().getfechaInicioInscripcion();
+		Date fechaFinalizacionInscripcion = curso.getCiclo().getfechaFinalizacionInscripcion();
+		
+		return (fechaInicioInscripcion.compareTo(fechaInscripcion)<=0
+				&& fechaFinalizacionInscripcion.compareTo(fechaInscripcion)>=0);
+	}
+
+
 	/**
 	 * Se encarga de ver si el aula de dicho curso esta lleno
-	 * @param curso
+	 * @param curs	o
 	 * @return retorna true si esta lleno y no si es false
 	 */
 	private Boolean verificarSiAulaEstaLleno(Curso curso) {
@@ -377,12 +463,12 @@ public class Universidad {
 	 */
 	private Boolean verificarSiAproboCorreleativas(Integer dni, Materia materiaAInscribir) {
 		ArrayList<Materia> correleativas = materiaAInscribir.getCorreleativas();
-		if(correleativas.size() == 0)
+		if(correleativas.size() == 0) //En el caso de que la materia no tiene correleativas
 			return true;
 		
 		
 		for(int i = 0 ; i<correleativas.size(); i++) 
-			if(aprobo(correleativas.get(i), dni) != true) 
+			if(aprobo(correleativas.get(i), dni) != true)  //Verifico hubo almenos una correleativa no aprobada
 				return false;			
 	
 		return true;
@@ -394,7 +480,7 @@ public class Universidad {
 		if(asignacionAlumno == null) // Verifico si le falto cursar alguna correleativa
 			return false;
 		
-		if(!(asignacionAlumno.estaCursando()))
+		if(!(asignacionAlumno.estaCursando())) // Si no la Promociono o no la Aprobo 
 			return false;
 		
 		return true;
@@ -442,8 +528,15 @@ public class Universidad {
 		
 		Boolean resultado = materia.eliminarCorreleativa(correleativa);
 		return resultado;
-
 	}
 
-	
+
+	public CursoProfesor buscarAsignacionProfesorPorCursoProfe(Curso curso, Profesor profesor) {		
+		for(CursoProfesor cp : this.asignacionesCP) {
+			if(cp.getCurso().equals(curso) && cp.getProfesor().equals(profesor))
+				return cp;
+		}
+		return null;
+	}
+
 }

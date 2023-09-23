@@ -80,12 +80,11 @@ public class CursoAlumno {
 	}
 	
 	public boolean estaPromocionado() {
-		/*
+		
 		return (this.notas.getPrimerParcial().getPuntaje()>=7 
 				&& this.notas.getSegundoParcial().getPuntaje()>= 7);
-				*/
-		
-		return obtenerNotaFinal() >= 7;
+					
+		//return obtenerNotaFinal() >= 7;
 	}
 	
 	private Nota obtenerNotaMayorRecuperatorio(Nota parcial, Nota recu) {

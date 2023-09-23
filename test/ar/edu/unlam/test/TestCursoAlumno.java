@@ -139,6 +139,7 @@ public class TestCursoAlumno {
 		Curso curso = new Curso(codigoCurso, pb2,horario,ciclo);
 		curso.setAula(aula);
 		//Alumno
+		//CLas
 		Date fechaNacimiento = new Date(2004,1,4);
 		Date fechaIngreso = new Date(2023,2,1);
 		Alumno alumno = new Alumno(4323445,"Alan","Aruquipa",fechaNacimiento, fechaIngreso);

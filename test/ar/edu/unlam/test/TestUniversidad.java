@@ -242,8 +242,7 @@ public class TestUniversidad {
 		
 		CicloLectivo ciclo = new CicloLectivo(fechaInicioCicloLectivo, fechaFinalizacionCicloLectivo,
 				fechaInicioInscripcion, fechaFinalizacionInscripcion);
-		//AULA
-		Aula aula = new Aula(215,84);
+
 		
 		//HORARIO
 		ArrayList<Dia> diasCursada = new ArrayList<>();
@@ -1182,13 +1181,13 @@ public class TestUniversidad {
 		universidad.inscribirAlumnoACurso(453232, 2323,fechaInscripcion);
 		//Registrando notas de ingles 1
 		universidad.registrarNota(453232, 2323, new Nota(TipoNota.PRIMER_PARCIAL,8));
-		universidad.registrarNota(453232, 2323, new Nota(TipoNota.SEGUNDO_PARCIAL,4));
-		universidad.registrarNota(453232, 2323, new Nota(TipoNota.RECUPERATORIO_SEGUNDO_PARCIAL,5));
+		universidad.registrarNota(453232, 2323, new Nota(TipoNota.SEGUNDO_PARCIAL,3));
+		universidad.registrarNota(453232, 2323, new Nota(TipoNota.RECUPERATORIO_SEGUNDO_PARCIAL,7));
 
 		//Inscribiendose al siguiente nivel (ingles 2)
 		Date fechaInscripcion2 = new Date(2024,2,24);		
 		Boolean resultado = universidad.inscribirAlumnoACurso(453232, 4646,fechaInscripcion2);
-		assertEquals(false,resultado);
+		assertEquals(true,resultado);
 	}
 	
 	@Test
@@ -1394,7 +1393,7 @@ public class TestUniversidad {
 		//Materia INGLES 2
 		Materia ingles2 = new Materia(2468, "INGLES TECNICO 2");
 		Aula aulaIngles2 = new Aula(80,30);
-		Curso cursoIng2 = new Curso(4646,ingles2,horario2,ciclo);
+		Curso cursoIng2 = new Curso(4646,ingles2,horario2,ciclo2);
 		
 		//Alumno
 		Date fechaNacimiento = new Date(2004,1,4);
@@ -1478,7 +1477,7 @@ public class TestUniversidad {
 		//Materia INF.GENERAL 
 		Materia infGeneral = new Materia(2222, "INFORMATICA GENERAL");
 		Aula aulainf = new Aula(80,30);
-		Curso cursoInf = new Curso(2020,infGeneral,horario2,ciclo);
+		Curso cursoInf = new Curso(2020,infGeneral,horario2,ciclo2);
 		
 		//Materia Programacion Web 1
 		Materia pw1 = new Materia(3333,"Programacion Web 1");

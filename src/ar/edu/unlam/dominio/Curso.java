@@ -46,6 +46,7 @@ public class Curso {
 	public void setAula(Aula aula) {
 		this.aula = aula;
 	}
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(codigoCurso);

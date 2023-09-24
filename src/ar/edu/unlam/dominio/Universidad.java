@@ -2,7 +2,6 @@ package ar.edu.unlam.dominio;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 
 import ar.edu.unlam.utils.*;
 
@@ -58,8 +57,13 @@ public class Universidad {
 		if(existeMateria == null || existeCurso != null) 
 			return false;
 		
-		Boolean resultado  = verificarSiExisteCursoIdentico(curso);
+		//Verifico si el ciclo lectivo existe
+		Boolean existe = buscarCiclo(curso.getCiclo())!= null ? true : false;
+		if(!existe)
+			return false;
 		
+		//Verifico si existe 
+		Boolean resultado  = verificarSiExisteCursoIdentico(curso);
 		if(resultado)
 			return false;
 		
@@ -482,7 +486,7 @@ public class Universidad {
 	 * @param codigoCurso --> identificador del curso
 	 * @return retorna un true si se pudo incribir, sino un false
 	 */
-	public Boolean inscribirAlumnoACurso(Integer dni, Integer codigoCurso,Date fechaInscripcion)
+	public Boolean inscribirAlumnoACurso(Integer dni, Integer codigoCurso,LocalDate fechaInscripcion)
 	{
 		Alumno alumno = buscarAlumnoPorDNI(dni);
 		Curso curso = buscarCursoPorCodigo(codigoCurso);
@@ -509,31 +513,45 @@ public class Universidad {
 		return true;
 	}
 	
-	private Boolean verificarSiDentroDeLaFecha(Date fechaInscripcion, Curso curso) {
-		Date fechaInicioInscripcion  = curso.getCiclo().getfechaInicioInscripcion();
-		Date fechaFinalizacionInscripcion = curso.getCiclo().getfechaFinalizacionInscripcion();
+	private Boolean verificarSiDentroDeLaFecha(LocalDate fechaInscripcion, Curso curso) {
+		LocalDate fechaInicioInscripcion  = curso.getCiclo().getfechaInicioInscripcion();
+		LocalDate fechaFinalizacionInscripcion = curso.getCiclo().getfechaFinalizacionInscripcion();
 		
-		return (fechaInicioInscripcion.compareTo(fechaInscripcion)<=0
-				&& fechaFinalizacionInscripcion.compareTo(fechaInscripcion)>=0);
+		return fechaInicioInscripcion.isBefore(fechaInscripcion)
+				&& fechaFinalizacionInscripcion.isAfter(fechaInscripcion);
 	}
 
 	
 	//Nota: FALTA PROBAR  
 	private Boolean determinarSiExisteUnaSuperposicion(CicloLectivo ciclo) {
 		for(CicloLectivo c : this.ciclos) {
-			if(existeSuperposicion(c,ciclo.getFechaInicioCicloLectivo()) || existeSuperposicion(c, ciclo.getfechaFinalizacionCicloLectivo())) 
+			if(existeSuperposicion(c,ciclo)) 
 				return true;
 		}
 		return false;
 	}
-	private Boolean existeSuperposicion(CicloLectivo c, Date fecha) {
-		return c.getFechaInicioCicloLectivo().before(fecha) && c.getfechaFinalizacionCicloLectivo().after(fecha);
+	private Boolean existeSuperposicion(CicloLectivo c, CicloLectivo cicloNuevo) {
+		//return c.getFechaInicioCicloLectivo().before(fecha) && c.getfechaFinalizacionCicloLectivo().after(fecha);
+		return esCicloAnteriorAOtra(c,cicloNuevo) != true && esCicloDespuesAOtra(c,cicloNuevo) != true;
+	}
+	
+	private Boolean esCicloAnteriorAOtra(CicloLectivo c, CicloLectivo cicloNuevo) {
+		LocalDate inicioNuevo = cicloNuevo.getFechaInicioCicloLectivo();
+		LocalDate finalNuevo = cicloNuevo.getfechaFinalizacionCicloLectivo();
+		return (inicioNuevo.isBefore(c.getfechaFinalizacionCicloLectivo()) && inicioNuevo.isBefore(c.getFechaInicioCicloLectivo()))
+				&& (finalNuevo.isBefore(c.getfechaFinalizacionCicloLectivo()) && finalNuevo.isBefore(c.getfechaInicioInscripcion()));
+	}
+	private Boolean esCicloDespuesAOtra(CicloLectivo c, CicloLectivo cicloNuevo) {
+		LocalDate inicioNuevo = cicloNuevo.getFechaInicioCicloLectivo();
+		LocalDate finalNuevo = cicloNuevo.getfechaFinalizacionCicloLectivo();
+		return (inicioNuevo.isAfter(c.getfechaFinalizacionCicloLectivo()) && inicioNuevo.isAfter(c.getFechaInicioCicloLectivo()))
+				&& (finalNuevo.isAfter(c.getfechaFinalizacionCicloLectivo()) && finalNuevo.isAfter(c.getfechaInicioInscripcion()));
 	}
 	
 	
 	/**
 	 * Se encarga de ver si el aula de dicho curso esta lleno
-	 * @param curs	o
+	 * @param curso
 	 * @return retorna true si esta lleno y no si es false
 	 */
 	private Boolean verificarSiAulaEstaLleno(Curso curso) {
@@ -652,4 +670,38 @@ public class Universidad {
 		
 		return false;
 	}
+
+
+	/**
+	 * Metodo que se encarga de agregar un ciclo lectivo, pero se debe tener en cuenta que no puede suporponerse
+	 * con otras
+	 * 
+	 * @param ciclo el objeto
+	 * @return retorna un verdadero si se ingreso, sino un false
+	 */
+	public boolean agregarCicloLectivo(CicloLectivo ciclo) {
+		
+		//Verifico primero si ya existio dicho ciclo
+		CicloLectivo existe = buscarCiclo(ciclo);
+		if(existe != null) 
+			return false;
+	
+		//Verifico superposicion
+		Boolean existeSuperposicion = determinarSiExisteUnaSuperposicion(ciclo);
+		if(existeSuperposicion)
+			return false;
+		
+		this.ciclos.add(ciclo);
+		return true;
+	}
+
+
+	private CicloLectivo buscarCiclo(CicloLectivo ciclo) {
+		for(CicloLectivo c : this.ciclos) {
+			if(c.equals(ciclo))
+				return c;
+		}
+		return null;
+	}
+
 }

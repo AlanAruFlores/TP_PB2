@@ -1,12 +1,8 @@
 package ar.edu.unlam.test;
 
 import static org.junit.Assert.*; 
-
 import java.util.ArrayList;
-import java.util.Date;
-
 import org.junit.Test;
-
 import ar.edu.unlam.dominio.Aula;
 import ar.edu.unlam.dominio.CicloLectivo;
 import ar.edu.unlam.dominio.Curso;
@@ -14,7 +10,7 @@ import ar.edu.unlam.dominio.Horario;
 import ar.edu.unlam.dominio.Materia;
 import ar.edu.unlam.utils.Dia;
 import ar.edu.unlam.utils.Turno;
-
+import java.time.LocalDate;
 
 public class TestCurso {
 
@@ -27,10 +23,10 @@ public class TestCurso {
 		pb2.agregarCorreleativa(pb1);		
 		
 		//Ciclo Lectivo
-		Date fechaInicioCicloLectivo  = new Date(2023,3,1);	
-		Date fechaFinalizacionCicloLectivo = new Date(2023,6,14);
-		Date fechaInicioInscripcion = new Date(2023,2,1);
-		Date fechaFinalizacionInscripcion = new Date(2023,2,28);
+		LocalDate fechaInicioCicloLectivo  = LocalDate.of(2023,3,1);	
+		LocalDate fechaFinalizacionCicloLectivo = LocalDate.of(2023,6,14);
+		LocalDate fechaInicioInscripcion = LocalDate.of(2023,2,1);
+		LocalDate fechaFinalizacionInscripcion = LocalDate.of(2023,2,28);
 		
 		CicloLectivo ciclo = new CicloLectivo(fechaInicioCicloLectivo, fechaFinalizacionCicloLectivo,
 				fechaInicioInscripcion, fechaFinalizacionInscripcion);
@@ -46,7 +42,8 @@ public class TestCurso {
 		Horario horario = new Horario(diasCursada,Turno.MAÑANA);
 		
 		//CURSO
-		Curso curso = new Curso(2424,pb2,horario,ciclo);
+		Curso curso = new Curso(2424,pb2,horario);
+		curso.setCiclo(ciclo);
 		curso.setAula(aula);
 		
 		assertNotNull(curso);

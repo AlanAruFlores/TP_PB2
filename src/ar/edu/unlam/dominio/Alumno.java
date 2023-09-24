@@ -1,5 +1,5 @@
 package ar.edu.unlam.dominio;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Alumno {
@@ -7,15 +7,15 @@ public class Alumno {
 		private Integer dni;
 		private String nombre; 
 		private String apellido;
-		private Date fechaNacimiento;
-		private Date fechaIngreso;
+		private LocalDate fechaNacimiento;
+		private LocalDate fechaIngreso;
 		
 		
 		public Alumno(Integer dni) {
 			this.dni = dni;
 		}
 		
-		public Alumno(Integer dni, String nombre, String apellido, Date fechaNacimiento, Date fechaIngreso) {
+		public Alumno(Integer dni, String nombre, String apellido, LocalDate fechaNacimiento, LocalDate fechaIngreso) {
 			this.dni = dni;
 			this.nombre = nombre;
 			this.apellido = apellido;
@@ -35,11 +35,11 @@ public class Alumno {
 			return this.apellido;
 		}
 
-		public Date getFechaNacimiento() {
+		public LocalDate getFechaNacimiento() {
 			return this.fechaNacimiento;
 		}
 
-		public Date getFechaIngreso() {
+		public LocalDate getFechaIngreso() {
 			return this.fechaIngreso;
 		}
 

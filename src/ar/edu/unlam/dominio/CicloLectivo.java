@@ -1,4 +1,5 @@
 package ar.edu.unlam.dominio;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
@@ -6,15 +7,15 @@ import java.util.Objects;
 public class CicloLectivo {
 		static Integer contId = 0;
 		private Integer id;
-		private Date fechaInicioCicloLectivo;
-		private Date fechaFinalizacionCicloLectivo;
-		private Date fechaInicioInscripcion;
-		private Date fechaFinalizacionInscripcion;
+		private LocalDate fechaInicioCicloLectivo;
+		private LocalDate fechaFinalizacionCicloLectivo;
+		private LocalDate fechaInicioInscripcion;
+		private LocalDate fechaFinalizacionInscripcion;
 
 		
 	
-		public CicloLectivo(Date fechaInicioCicloLectivo, Date fechaFinalizacionCicloLectivo, Date fechaInicioInscripcion,
-				Date fechaFinalizacionInscripcion) {
+		public CicloLectivo(LocalDate fechaInicioCicloLectivo, LocalDate fechaFinalizacionCicloLectivo, LocalDate fechaInicioInscripcion,
+				LocalDate fechaFinalizacionInscripcion) {
 			this.id  = ++contId;
 			this.fechaInicioCicloLectivo = fechaInicioCicloLectivo;
 			this.fechaFinalizacionCicloLectivo  =fechaFinalizacionCicloLectivo;
@@ -25,22 +26,22 @@ public class CicloLectivo {
 		public Integer getID() {
 			return this.id;
 		}
-		public Date getFechaInicioCicloLectivo() {
+		public LocalDate getFechaInicioCicloLectivo() {
 			// TODO Auto-generated method stub
 			return this.fechaInicioCicloLectivo;
 		}
 
-		public Date getfechaInicioInscripcion() {
+		public LocalDate getfechaInicioInscripcion() {
 			// TODO Auto-generated method stub
 			return this.fechaInicioInscripcion;
 		}
 
-		public Date getfechaFinalizacionInscripcion() {
+		public LocalDate getfechaFinalizacionInscripcion() {
 			// TODO Auto-generated method stub
 			return this.fechaFinalizacionInscripcion;
 		}
 
-		public Date getfechaFinalizacionCicloLectivo() {
+		public LocalDate getfechaFinalizacionCicloLectivo() {
 			// TODO Auto-generated method stub
 			return this.fechaFinalizacionCicloLectivo;
 		}

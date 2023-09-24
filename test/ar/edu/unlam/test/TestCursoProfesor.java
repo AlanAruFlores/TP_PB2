@@ -1,13 +1,7 @@
 package ar.edu.unlam.test;
-
 import static org.junit.Assert.*;
-
 import java.util.ArrayList;
-import java.util.Date;
-
 import org.junit.Test;
-
-import ar.edu.unlam.dominio.Alumno;
 import ar.edu.unlam.dominio.CursoProfesor;
 import ar.edu.unlam.dominio.Aula;
 import ar.edu.unlam.dominio.Profesor;
@@ -17,9 +11,7 @@ import ar.edu.unlam.dominio.Materia;
 import ar.edu.unlam.utils.Dia;
 import ar.edu.unlam.utils.Turno;
 import ar.edu.unlam.dominio.CicloLectivo;
-
-
-
+import java.time.LocalDate;
 public class TestCursoProfesor {
 	@Test
 	public void queSePuedaCrearUnaAsignacion() {
@@ -29,13 +21,11 @@ public class TestCursoProfesor {
 		Materia pb2 = new Materia(2222,"PROGRAMACION BASICA 2");
 		pb2.agregarCorreleativa(pb1);
 		
-		
 		Aula aula = new Aula(215,84);
-		
-		Date fechaInicioCicloLectivo  = new Date(2023,3,1);	
-		Date fechaFinalizacionCicloLectivo = new Date(2023,6,14);
-		Date fechaInicioInscripcion = new Date(2023,2,1);
-		Date fechaFinalizacionInscripcion = new Date(2023,2,28);
+		LocalDate fechaInicioCicloLectivo  = LocalDate.of(2023,3,1);	
+		LocalDate fechaFinalizacionCicloLectivo = LocalDate.of(2023,6,14);
+		LocalDate fechaInicioInscripcion = LocalDate.of(2023,2,1);
+		LocalDate fechaFinalizacionInscripcion = LocalDate.of(2023,2,28);
 		
 		CicloLectivo ciclo = new CicloLectivo(fechaInicioCicloLectivo, fechaFinalizacionCicloLectivo,
 				fechaInicioInscripcion, fechaFinalizacionInscripcion);
@@ -52,11 +42,8 @@ public class TestCursoProfesor {
 		curso.setAula(aula);
 		//Profesor
 		Profesor profesor = new Profesor(4423343,"Dario","Leoncini");
-		
 		CursoProfesor asignacion = new CursoProfesor(curso,profesor);
-		
 		Integer idEsperado = 1;
-		
 		
 		assertNotNull(asignacion);
 		assertEquals(idEsperado, asignacion.getId());

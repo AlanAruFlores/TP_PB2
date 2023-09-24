@@ -69,7 +69,7 @@ public class CursoAlumno {
 		return notasRelevantes;
 	}
 	
-	public boolean estaCursando() {
+	public Boolean estaCursando() {
 		Double resultado = obtenerNotaFinal();
 		Boolean aprobo = false; 
 		
@@ -79,10 +79,10 @@ public class CursoAlumno {
 		return aprobo;
 	}
 	
-	public boolean estaPromocionado() {
+	public Boolean estaPromocionado() {
 		
 		return (this.notas.getPrimerParcial().getPuntaje()>=7 
-				&& this.notas.getSegundoParcial().getPuntaje()>= 7);
+				&& this.notas.getSegundoParcial().getPuntaje()>= 7); 
 					
 		//return obtenerNotaFinal() >= 7;
 	}

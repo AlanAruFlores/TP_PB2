@@ -307,19 +307,24 @@ public class Universidad {
 		Alumno aprobadasAlumno = buscarAlumnoPorDNI(alumnoDni);
 		return aprobadasAlumno.getMateriasAprobadasPorAlumno(); 
 	}
+	
+	public void agregarMateriaAprobada(Curso curso, Alumno alumno, Materia materia) {
+		CursoAlumno aux = buscarAsignacionAlumnoPorAlumnoCurso(alumno, curso);
+		AlumnoNotas notas = aux.getNotas();
+		if((notas.getPrimerParcial().getPuntaje() >= 7 || notas.getRecuperatorio().getPuntaje() >= 7) &&
+				(notas.getSegundoParcial().getPuntaje() >= 7 || notas.getRecuperatorio().getPuntaje() >= 7)) {
+			alumno.agregarMateriaAprobadaAlArray(materia); 
+		}
+	}
 
 	private boolean aprobo(Materia materia, Integer dni) { 
 		CursoAlumno asignacionAlumno = buscarAsignacionPorAlumnoMateria(materia, dni);
 
-		if (asignacionAlumno == null) { // Verifico si le falto cursar alguna correleativa
+		if (asignacionAlumno == null) // Verifico si le falto cursar alguna correleativa
 			return false;
-		}
-		if (!(asignacionAlumno.estaCursando())) { // Si no la Promociono o no la Aprobo
-			return false;
-		}
 		
-		Alumno alumnoAprob = buscarAlumnoPorDNI(dni);
-		alumnoAprob.agregarMateriaAprobadaAlArray(materia); 
+		if (!(asignacionAlumno.estaCursando())) // Si no la Promociono o no la Aprobo
+			return false;
 		
 		return true;
 	}

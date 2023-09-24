@@ -1,5 +1,6 @@
 package ar.edu.unlam.dominio;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -15,7 +16,9 @@ public class Universidad {
 	private ArrayList<Aula> aulas;
 	private ArrayList<CursoProfesor> asignacionesCP;
 	private ArrayList<CursoAlumno> asignacionesCA;
-
+	private ArrayList<CicloLectivo> ciclos;
+	
+	
 	public Universidad(String nombreUniversidad) {
 		this.nombreUniversidad = nombreUniversidad;
 		this.materias = new ArrayList<>();
@@ -25,6 +28,7 @@ public class Universidad {
 		this.asignacionesCP  = new ArrayList<>();
 		this.asignacionesCA = new ArrayList<>();
 		this.aulas = new ArrayList<>();
+		this.ciclos = new ArrayList<>();
 	}
 
 
@@ -241,6 +245,8 @@ public class Universidad {
 	 * @param codCurso identificador del curso
 	 * @param nota esta es la calificacion a asignar al alumno
 	 * @return retorno si se agrego la nota exitosamente.
+	 * 
+	 * Falta: testear que la nota sea 6 en caso de que debe final correleativa
 	 */
 	public Boolean registrarNota(Integer dniAlumno, Integer codCurso, Nota nota) {
 		Alumno alumno = buscarAlumnoPorDNI(dniAlumno);
@@ -248,17 +254,24 @@ public class Universidad {
 		
 		if(alumno == null || curso == null)
 			return false;
-		
-	
+			
 		CursoAlumno cursoAlumno  = buscarAsignacionAlumnoPorAlumnoCurso(alumno, curso);
-		
 		if(cursoAlumno == null)
 			return false;
+		
+		Boolean verificacion = debeUnaCorreleativaAFinal(cursoAlumno,nota);
+		
+		if(verificacion && nota.getPuntaje()>=7)
+			nota.asignarPuntaje(6);
+		
 		
 		Boolean resultado = cursoAlumno.asignarNota(nota);
 		return resultado;
 	}
 	
+
+
+
 	//BUSQUEDAS
 	private Materia buscarMateriaPorCodigo(Integer codigo) {
 		Materia aux = new Materia(codigo);
@@ -390,6 +403,78 @@ public class Universidad {
 		return cursosSeleccionados;
 	}
 
+	
+	/**
+	 * Metodo que permite obtener las notas de los estudiantes
+	 * @param idAlumno
+	 * @param idMateria
+	 * @return
+	 */
+	
+	public Nota obtenerNota(Integer idAlumno, Integer idMateria, TipoNota tipoDeNota) {
+		Alumno alumno = buscarAlumnoPorDNI(idAlumno);
+		Materia materia = buscarMateriaPorCodigo(idMateria);
+		
+		if(alumno == null || materia == null) 
+			return null;
+		
+		
+		CursoAlumno ca = buscarAsignacionPorAlumnoMateria(materia, idAlumno);	
+		Nota notaObtenida = buscarNotaPorTipo(ca, tipoDeNota);			
+		
+		return notaObtenida;
+	}
+	
+	private Nota buscarNotaPorTipo(CursoAlumno ca, TipoNota tipoDeNota) {
+		Nota aux = null; 
+		switch(tipoDeNota) {
+			case PRIMER_PARCIAL:
+				aux = ca.getNotas().getPrimerParcial();
+				break;
+			case SEGUNDO_PARCIAL:
+				aux = ca.getNotas().getSegundoParcial();
+				break;
+			case RECUPERATORIO_PRIMER_PARCIAL:
+			case RECUPERATORIO_SEGUNDO_PARCIAL:
+				if(ca.getNotas().getRecuperatorio().getTipoNota().equals(tipoDeNota))
+					aux = ca.getNotas().getRecuperatorio();
+				break;
+		}
+		return aux;
+	}
+
+
+	public Double calcularPromedio(Integer idAlumno) {
+		Alumno alumno = buscarAlumnoPorDNI(idAlumno);
+		if(alumno == null)
+			return 0.0;
+		
+		ArrayList<CursoAlumno> cursosDelAlumno = buscarAsignacionAlumnoPorAlumno(alumno);
+		return obtenerPromedio(cursosDelAlumno);
+	}
+	
+	
+	
+	private Double obtenerPromedio(ArrayList<CursoAlumno> cursosDelAlumno) {
+		Double suma = 0.0;
+		for(CursoAlumno ca : cursosDelAlumno) {
+			suma+=ca.obtenerNotaFinal();
+		}
+		
+		return (double)(suma/cursosDelAlumno.size());
+	}
+
+
+	private ArrayList<CursoAlumno> buscarAsignacionAlumnoPorAlumno(Alumno alumno) {
+		ArrayList<CursoAlumno> cursos = new ArrayList<>();
+		
+		for(CursoAlumno ca : this.asignacionesCA)
+			if(ca.getAlumno().equals(alumno))
+				cursos.add(ca);
+				
+		return cursos;
+	}
+
 
 	/**
 	 * Se encarga de inscribir el alumno a un curso
@@ -432,7 +517,20 @@ public class Universidad {
 				&& fechaFinalizacionInscripcion.compareTo(fechaInscripcion)>=0);
 	}
 
-
+	
+	//Nota: FALTA PROBAR  
+	private Boolean determinarSiExisteUnaSuperposicion(CicloLectivo ciclo) {
+		for(CicloLectivo c : this.ciclos) {
+			if(existeSuperposicion(c,ciclo.getFechaInicioCicloLectivo()) || existeSuperposicion(c, ciclo.getfechaFinalizacionCicloLectivo())) 
+				return true;
+		}
+		return false;
+	}
+	private Boolean existeSuperposicion(CicloLectivo c, Date fecha) {
+		return c.getFechaInicioCicloLectivo().before(fecha) && c.getfechaFinalizacionCicloLectivo().after(fecha);
+	}
+	
+	
 	/**
 	 * Se encarga de ver si el aula de dicho curso esta lleno
 	 * @param curs	o
@@ -538,5 +636,20 @@ public class Universidad {
 		}
 		return null;
 	}
-
+	
+	private Boolean debeUnaCorreleativaAFinal(CursoAlumno cursoAlumno, Nota nota) {
+		ArrayList<Materia> correleativas = cursoAlumno.getCurso().getMateria().getCorreleativas();
+		Integer dniAlumno = cursoAlumno.getAlumno().getDni();
+		
+		if(correleativas.size() == 0)
+			return false;
+		
+		for(Materia mat : correleativas) {
+			CursoAlumno ca = buscarAsignacionPorAlumnoMateria(mat, dniAlumno);
+			if(!(ca.estaPromocionado()))
+					return true;
+		}
+		
+		return false;
+	}
 }

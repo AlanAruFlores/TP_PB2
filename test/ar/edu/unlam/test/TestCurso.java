@@ -15,7 +15,7 @@ import ar.edu.unlam.dominio.Materia;
 import ar.edu.unlam.utils.Dia;
 import ar.edu.unlam.utils.Turno;
 
-@Deprecated
+
 public class TestCurso {
 
 	@Test

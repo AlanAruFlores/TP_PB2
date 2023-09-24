@@ -11,6 +11,8 @@ public class CicloLectivo {
 		private Date fechaInicioInscripcion;
 		private Date fechaFinalizacionInscripcion;
 
+		
+	
 		public CicloLectivo(Date fechaInicioCicloLectivo, Date fechaFinalizacionCicloLectivo, Date fechaInicioInscripcion,
 				Date fechaFinalizacionInscripcion) {
 			this.id  = ++contId;

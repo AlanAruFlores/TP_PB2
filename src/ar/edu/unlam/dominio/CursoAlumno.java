@@ -1,7 +1,5 @@
 package ar.edu.unlam.dominio;
-
 import java.util.ArrayList;
-
 import ar.edu.unlam.utils.TipoNota;
 
 public class CursoAlumno {
@@ -42,7 +40,7 @@ public class CursoAlumno {
 			suma += notasRelevantes.get(i).getPuntaje();
 		
 		
-		promedio = (double)(suma/notasRelevantes.size());
+		promedio = Math.floor(suma/notasRelevantes.size());
 		return promedio;
 	}
 
@@ -54,10 +52,10 @@ public class CursoAlumno {
 			TipoNota tipoRecu = this.notas.getRecuperatorio().getTipoNota();
 			
 			if(tipoRecu.equals(TipoNota.RECUPERATORIO_PRIMER_PARCIAL)) {
-				notasRelevantes.add(notas.getPrimerParcial());
+				notasRelevantes.add(notas.getSegundoParcial());
 				notaMayor = obtenerNotaMayorRecuperatorio(this.notas.getPrimerParcial(), this.notas.getRecuperatorio());
 			}else {
-				notasRelevantes.add(notas.getSegundoParcial());
+				notasRelevantes.add(notas.getPrimerParcial());
 				notaMayor = obtenerNotaMayorRecuperatorio(this.notas.getSegundoParcial(), this.notas.getRecuperatorio());
 			
 			}
@@ -79,12 +77,8 @@ public class CursoAlumno {
 		return aprobo;
 	}
 	
-	public boolean estaPromocionado() {
-		
-		return (this.notas.getPrimerParcial().getPuntaje()>=7 
-				&& this.notas.getSegundoParcial().getPuntaje()>= 7);
-					
-		//return obtenerNotaFinal() >= 7;
+	public boolean estaPromocionado() {	
+		return obtenerNotaFinal() >= 7;
 	}
 	
 	private Nota obtenerNotaMayorRecuperatorio(Nota parcial, Nota recu) {

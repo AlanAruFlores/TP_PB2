@@ -1,8 +1,7 @@
 package ar.edu.unlam.dominio;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
-
 import ar.edu.unlam.utils.*;
 
 public class Universidad {
@@ -15,7 +14,8 @@ public class Universidad {
 	private ArrayList<Aula> aulas;
 	private ArrayList<CursoProfesor> asignacionesCP;
 	private ArrayList<CursoAlumno> asignacionesCA;
-
+	private ArrayList<CicloLectivo> ciclos;
+	
 	public Universidad(String nombreUniversidad) {
 		this.nombreUniversidad = nombreUniversidad;
 		this.materias = new ArrayList<>();
@@ -25,6 +25,7 @@ public class Universidad {
 		this.asignacionesCP  = new ArrayList<>();
 		this.asignacionesCA = new ArrayList<>();
 		this.aulas = new ArrayList<>();
+		this.ciclos = new ArrayList<>();
 	}
 
 
@@ -131,6 +132,72 @@ public class Universidad {
 		return true;
 	}
 
+	/**
+	 * Metodo que permite obtener una del estudiante
+	 * @param idAlumno
+	 * @param idMateria
+	 * @return
+	 */
+	
+	public Nota obtenerNota(Integer idAlumno, Integer idMateria, TipoNota tipoDeNota) {
+		Alumno alumno = buscarAlumnoPorDNI(idAlumno);
+		Materia materia = buscarMateriaPorCodigo(idMateria);
+		
+		if(alumno == null || materia == null) 
+			return null;
+		
+		
+		CursoAlumno ca = buscarAsignacionPorAlumnoMateria(materia, idAlumno);	
+		Nota notaObtenida = buscarNotaPorTipo(ca, tipoDeNota);			
+		
+		return notaObtenida;
+	}
+	
+	public Double calcularPromedio(Integer idAlumno) {
+		Alumno alumno = buscarAlumnoPorDNI(idAlumno);
+		if(alumno == null)
+			return 0.0;
+		
+		ArrayList<CursoAlumno> cursosDelAlumno = buscarAsignacionAlumnoPorAlumno(alumno);
+		return obtenerPromedio(cursosDelAlumno);
+	}
+
+	private Double obtenerPromedio(ArrayList<CursoAlumno> cursosDelAlumno) {
+		Double suma = 0.0;
+		for(CursoAlumno ca : cursosDelAlumno) {
+			suma+=ca.obtenerNotaFinal();
+		}
+		
+		return (double)(suma/cursosDelAlumno.size());
+	}	
+
+	private ArrayList<CursoAlumno> buscarAsignacionAlumnoPorAlumno(Alumno alumno) {
+		ArrayList<CursoAlumno> cursos = new ArrayList<>();
+		
+		for(CursoAlumno ca : this.asignacionesCA)
+			if(ca.getAlumno().equals(alumno))
+				cursos.add(ca);
+				
+		return cursos;
+	}
+
+	private Nota buscarNotaPorTipo(CursoAlumno ca, TipoNota tipoDeNota) {
+		Nota aux = null; 
+		switch(tipoDeNota) {
+			case PRIMER_PARCIAL:
+				aux = ca.getNotas().getPrimerParcial();
+				break;
+			case SEGUNDO_PARCIAL:
+				aux = ca.getNotas().getSegundoParcial();
+				break;
+			case RECUPERATORIO_PRIMER_PARCIAL:
+			case RECUPERATORIO_SEGUNDO_PARCIAL:
+				if(ca.getNotas().getRecuperatorio().getTipoNota().equals(tipoDeNota))
+					aux = ca.getNotas().getRecuperatorio();
+				break;
+		}
+		return aux;
+	}
 	
 	private Boolean verificarSiAulaEstaOcupada(Aula aula, Curso curso) {
 		ArrayList<Curso> cursosDelAula = buscarCursosDeUnAula(aula);
@@ -207,6 +274,32 @@ public class Universidad {
 		this.asignacionesCP.add(nuevo);
 	}
 
+	
+
+	/**
+	 * Metodo que se encarga de agregar un ciclo lectivo, pero se debe tener en cuenta que no puede suporponerse
+	 * con otras
+	 * 
+	 * @param ciclo el objeto
+	 * @return retorna un verdadero si se ingreso, sino un false
+	 */
+	public boolean agregarCicloLectivo(CicloLectivo ciclo) {
+		
+		//Verifico primero si ya existio dicho ciclo
+		CicloLectivo existe = buscarCiclo(ciclo);
+		if(existe != null) 
+			return false;
+	
+		//Verifico superposicion
+		Boolean existeSuperposicion = determinarSiExisteUnaSuperposicion(ciclo);
+		if(existeSuperposicion)
+			return false;
+		
+		this.ciclos.add(ciclo);
+		return true;
+	}
+	
+	
 	/**
 	 * Metodo que se encarga de verificar si falta profesores
 	 * Por cada 20 alumnos se asigna un profesor 
@@ -397,7 +490,7 @@ public class Universidad {
 	 * @param codigoCurso --> identificador del curso
 	 * @return retorna un true si se pudo incribir, sino un false
 	 */
-	public Boolean inscribirAlumnoACurso(Integer dni, Integer codigoCurso,Date fechaInscripcion)
+	public Boolean inscribirAlumnoACurso(Integer dni, Integer codigoCurso,LocalDate fechaInscripcion)
 	{
 		Alumno alumno = buscarAlumnoPorDNI(dni);
 		Curso curso = buscarCursoPorCodigo(codigoCurso);
@@ -424,14 +517,13 @@ public class Universidad {
 		return true;
 	}
 	
-	private Boolean verificarSiDentroDeLaFecha(Date fechaInscripcion, Curso curso) {
-		Date fechaInicioInscripcion  = curso.getCiclo().getfechaInicioInscripcion();
-		Date fechaFinalizacionInscripcion = curso.getCiclo().getfechaFinalizacionInscripcion();
+	private Boolean verificarSiDentroDeLaFecha(LocalDate fechaInscripcion, Curso curso) {
+		LocalDate fechaInicioInscripcion  = curso.getCiclo().getfechaInicioInscripcion();
+		LocalDate fechaFinalizacionInscripcion = curso.getCiclo().getfechaFinalizacionInscripcion();
 		
-		return (fechaInicioInscripcion.compareTo(fechaInscripcion)<=0
-				&& fechaFinalizacionInscripcion.compareTo(fechaInscripcion)>=0);
+		return fechaInicioInscripcion.isBefore(fechaInscripcion)
+				&& fechaFinalizacionInscripcion.isAfter(fechaInscripcion);
 	}
-
 
 	/**
 	 * Se encarga de ver si el aula de dicho curso esta lleno
@@ -512,7 +604,6 @@ public class Universidad {
 		return this.profesores;
 	}
 
-
 	/**
 	 * Metodo que se encarga de eliminar las correleativas de una materia
 	 * @param codMateria --> identificador de la materia
@@ -535,6 +626,40 @@ public class Universidad {
 		for(CursoProfesor cp : this.asignacionesCP) {
 			if(cp.getCurso().equals(curso) && cp.getProfesor().equals(profesor))
 				return cp;
+		}
+		return null;
+	}
+	
+	
+	private Boolean existeSuperposicion(CicloLectivo c, CicloLectivo cicloNuevo) {
+		return esCicloAnteriorAOtra(c,cicloNuevo) != true && esCicloDespuesAOtra(c,cicloNuevo) != true;
+	}
+
+	private Boolean esCicloAnteriorAOtra(CicloLectivo c, CicloLectivo cicloNuevo) {
+		LocalDate inicioNuevo = cicloNuevo.getFechaInicioCicloLectivo();
+		LocalDate finalNuevo = cicloNuevo.getfechaFinalizacionCicloLectivo();
+		return (inicioNuevo.isBefore(c.getfechaFinalizacionCicloLectivo()) && inicioNuevo.isBefore(c.getFechaInicioCicloLectivo()))
+				&& (finalNuevo.isBefore(c.getfechaFinalizacionCicloLectivo()) && finalNuevo.isBefore(c.getfechaInicioInscripcion()));
+	}
+	
+	private Boolean esCicloDespuesAOtra(CicloLectivo c, CicloLectivo cicloNuevo) {
+		LocalDate inicioNuevo = cicloNuevo.getFechaInicioCicloLectivo();
+		LocalDate finalNuevo = cicloNuevo.getfechaFinalizacionCicloLectivo();
+		return (inicioNuevo.isAfter(c.getfechaFinalizacionCicloLectivo()) && inicioNuevo.isAfter(c.getFechaInicioCicloLectivo()))
+				&& (finalNuevo.isAfter(c.getfechaFinalizacionCicloLectivo()) && finalNuevo.isAfter(c.getfechaInicioInscripcion()));
+	}
+	
+	private Boolean determinarSiExisteUnaSuperposicion(CicloLectivo ciclo) {
+		for(CicloLectivo c : this.ciclos) {
+			if(existeSuperposicion(c,ciclo)) 
+				return true;
+		}
+		return false;
+	}
+	private CicloLectivo buscarCiclo(CicloLectivo ciclo) {
+		for(CicloLectivo c : this.ciclos) {
+			if(c.equals(ciclo))
+				return c;
 		}
 		return null;
 	}

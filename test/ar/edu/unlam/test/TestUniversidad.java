@@ -2065,34 +2065,95 @@ public class TestUniversidad {
 		Integer codCurso  = 2323;
 		
 		Nota primerParcial = new Nota(TipoNota.PRIMER_PARCIAL,8);
-		Nota segundoParcial = new Nota(TipoNota.SEGUNDO_PARCIAL,7);
-	//	Nota recuperatorio2doParcial = new Nota(TipoNota.RECUPERATORIO_SEGUNDO_PARCIAL,7);
+		Nota segundoParcial = new Nota(TipoNota.SEGUNDO_PARCIAL,6);
+		Nota recuperatorio2doParcial = new Nota(TipoNota.RECUPERATORIO_SEGUNDO_PARCIAL,7);
 		
 		
 		uni.registrarNota(dniAlumno, codCurso, primerParcial);
 		uni.registrarNota(dniAlumno, codCurso, segundoParcial);
-	//	uni.registrarNota(dniAlumno, codCurso, recuperatorio2doParcial);
+		uni.registrarNota(dniAlumno, codCurso, recuperatorio2doParcial);
 		
 		uni.agregarMateriaAprobada(cursoPB1, alumno, pb1); 
 		ArrayList<Materia> aprobadas = uni.obtenerMateriasAprobadasParaUnAlumno(dniAlumno);
 		
 		assertEquals(pb1, aprobadas.get(0));
+	}
+	
+	@Test
+	public void queDevuelvaMateriasQueFaltanCursarPorAlumno() {
+		Universidad uni = new Universidad("UNLAM");
+		ArrayList<Materia> planDeEstudios= new ArrayList<>();
+		/*Ciclo lectivo*/
+		Date fechaInicioCicloLectivo  = new Date(2023,3,1);	
+		Date fechaFinalizacionCicloLectivo = new Date(2023,6,14);
 		
-//		CursoAlumno cursoAlumno = uni.buscarAsignacionAlumnoPorAlumnoCurso(
-//			new Alumno(dniAlumno), new Curso(codCurso));
-//		
-//		//Notas Esperadas
-//		Integer primeraNota = 8;
-//		Integer segundaNota  = 6;
-//		Integer recuperatorioNota = 7;
-//		
-//		assertEquals(primeraNota.intValue(), 
-//		  cursoAlumno.getNotas().getPrimerParcial().getPuntaje().intValue());
-//		assertEquals(segundaNota.intValue(), 
-//		  cursoAlumno.getNotas().getSegundoParcial().getPuntaje().intValue());
-//		assertEquals(recuperatorioNota.intValue(), 
-//		  cursoAlumno.getNotas().getRecuperatorio().getPuntaje().intValue());			
-//		
+		//Fecha de inicio y finalizacion de inscripcion
+		Date fechaInicioInscripcion = new Date(2023,2,1);
+		Date fechaFinalizacionInscripcion = new Date(2023,2,28);
 		
+		CicloLectivo ciclo = new CicloLectivo(fechaInicioCicloLectivo, fechaFinalizacionCicloLectivo,
+				fechaInicioInscripcion, fechaFinalizacionInscripcion);
+		
+		//Horario
+		ArrayList<Dia> diasCursada = new ArrayList<Dia>();
+		diasCursada.add(Dia.LUNES);
+		ArrayList<Dia> diasCursada2 = new ArrayList<Dia>();
+		diasCursada2.add(Dia.MARTES); 
+		Horario horario = new Horario(diasCursada,Turno.MAÑANA);
+		Horario horario2 = new Horario(diasCursada2,Turno.MAÑANA);
+		
+		//Materia PB1
+		Materia pb1  = new Materia(1111, "PROGRAMACION BASICA 1");
+		Aula aulaPB1 = new Aula(111,100);
+		Curso cursoPB1  = new Curso(2323,pb1,horario,ciclo);
+		planDeEstudios.add(pb1);
+		
+		//Materia PB2
+		Materia pb2  = new Materia(2222, "PROGRAMACION BASICA 2");
+		Aula aulaPB2 = new Aula(222,100);
+		Curso cursoPB2  = new Curso(2424,pb2,horario2,ciclo);
+		planDeEstudios.add(pb2);
+		uni.asignarPlanDeEstudios(planDeEstudios); 
+		
+		//Alumno
+		Date fechaNacimiento = new Date(2001,7,10);
+		Date fechaIngreso = new Date(2023,2,1);
+		Alumno alumno = new Alumno(43506696,"Gonzalo","Viale",fechaNacimiento,fechaIngreso);
+				
+		
+		uni.registrarAlumno(alumno);
+		uni.registrarMateria(pb1);
+		uni.registrarAula(aulaPB1);
+		uni.crearCurso(cursoPB1);
+		uni.asignarAulaAlCurso(111, 2323);
+		
+		uni.registrarMateria(pb2);
+		uni.registrarAula(aulaPB2);
+		uni.crearCurso(cursoPB2);
+		uni.asignarAulaAlCurso(222, 2424);
+		
+		Date fechaInscripcion = new Date(2023,2,24);
+		uni.inscribirAlumnoACurso(43506696, 2323, fechaInscripcion);
+		Date fechaInscripcion2 = new Date(2023,2,24);
+		uni.inscribirAlumnoACurso(43506696, 2424, fechaInscripcion2); 
+		
+		Integer dniAlumno = 43506696;
+		Integer codCurso  = 2323;
+		
+		Nota primerParcial = new Nota(TipoNota.PRIMER_PARCIAL,8);
+		Nota segundoParcial = new Nota(TipoNota.SEGUNDO_PARCIAL,6);
+		Nota recuperatorio2doParcial = new Nota(TipoNota.RECUPERATORIO_SEGUNDO_PARCIAL,7);
+		
+		
+		uni.registrarNota(dniAlumno, codCurso, primerParcial);
+		uni.registrarNota(dniAlumno, codCurso, segundoParcial);
+		uni.registrarNota(dniAlumno, codCurso, recuperatorio2doParcial);
+		
+		uni.agregarMateriaAprobada(cursoPB1, alumno, pb1); 
+		ArrayList<Materia> faltanCursar = uni.obtenerMateriasQueFaltanCursarParaUnAlumno(dniAlumno);
+		ArrayList<Materia> faltanCursarEsperadas = new ArrayList<>();
+		faltanCursarEsperadas.add(pb2);
+		
+		assertEquals(faltanCursarEsperadas, faltanCursar); 
 	}
 }

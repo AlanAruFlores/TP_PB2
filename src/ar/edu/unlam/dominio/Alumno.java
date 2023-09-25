@@ -23,6 +23,7 @@ public class Alumno {
 			this.apellido = apellido;
 			this.fechaNacimiento = fechaNacimiento;
 			this.fechaIngreso = fechaIngreso;
+			this.materiasAprobadasPorAlumno = new ArrayList<>();
 		}
 		
 		public void agregarMateriaAprobadaAlArray(Materia materiaAprob) {

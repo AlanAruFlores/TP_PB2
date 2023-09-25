@@ -295,7 +295,7 @@ public class Universidad {
 		ArrayList<Materia> faltanCursar = new ArrayList<>();
 		for (int i = 0; i < aprobadasAlumno.size(); i++) {
 			for (int j = 0; j < this.planDeEstudios.size(); j++) {
-				if(this.planDeEstudios.get(j).equals(aprobadasAlumno.get(i))) {
+				if(!this.planDeEstudios.get(j).equals(aprobadasAlumno.get(i))) {
 					faltanCursar.add(planDeEstudios.get(j));
 				}
 			}

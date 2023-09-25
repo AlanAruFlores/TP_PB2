@@ -183,7 +183,8 @@ public class Universidad {
 			return false;
 		
 		Integer cantidadDeAlumnos = calcularCantidadDeAlumnos(curso);
-		if(curso.getAula() == null || cantidadDeAlumnos<=0) // Si no existe un aula asignada , no se podra asignar el profe
+		if(curso.getAula() == null || cantidadDeAlumnos<=0) 
+			// Si no existe un aula asignada , no se podra asignar el profe
 			return false;
 		
 		//Verifica que no se asigne el mismo docente 2 veces en el mismo curso

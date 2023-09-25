@@ -42,8 +42,7 @@ public class TestCurso {
 		Horario horario = new Horario(diasCursada,Turno.MAÑANA);
 		
 		//CURSO
-		Curso curso = new Curso(2424,pb2,horario);
-		curso.setCiclo(ciclo);
+		Curso curso = new Curso(2424,pb2,horario,ciclo);
 		curso.setAula(aula);
 		
 		assertNotNull(curso);

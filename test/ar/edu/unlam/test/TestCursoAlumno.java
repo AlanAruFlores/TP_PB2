@@ -1,23 +1,24 @@
 package ar.edu.unlam.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.junit.Test;
 
 import ar.edu.unlam.dominio.Alumno;
-import ar.edu.unlam.dominio.CursoAlumno;
 import ar.edu.unlam.dominio.Aula;
+import ar.edu.unlam.dominio.CicloLectivo;
 import ar.edu.unlam.dominio.Curso;
+import ar.edu.unlam.dominio.CursoAlumno;
 import ar.edu.unlam.dominio.Horario;
 import ar.edu.unlam.dominio.Materia;
 import ar.edu.unlam.dominio.Nota;
 import ar.edu.unlam.utils.Dia;
 import ar.edu.unlam.utils.TipoNota;
 import ar.edu.unlam.utils.Turno;
-import ar.edu.unlam.dominio.CicloLectivo;
 
 public class TestCursoAlumno {
 
@@ -30,14 +31,14 @@ public class TestCursoAlumno {
 		Materia pb2 = new Materia(2222,"PROGRAMACION BASICA 2");
 		pb2.agregarCorreleativa(pb1);
 		/*Ciclo Lectivo*/
-		Date fechaInicioCicloLectivo  = new Date(2023,3,1);	
-		Date fechaFinalizacionCicloLectivo = new Date(2023,6,14);
-		Date fechaInicioInscripcion = new Date(2023,2,1);
-		Date fechaFinalizacionInscripcion = new Date(2023,2,28);
+		LocalDate fechaInicioCicloLectivo  = LocalDate.of(2023,3,1);
+		LocalDate fechaFinalizacionCicloLectivo = LocalDate.of(2023,6,14);
+		LocalDate fechaInicioInscripcion = LocalDate.of(2023,2,1);
+		LocalDate fechaFinalizacionInscripcion = LocalDate.of(2023,2,28);
 		
 		CicloLectivo ciclo = new CicloLectivo(fechaInicioCicloLectivo, fechaFinalizacionCicloLectivo,
 				fechaInicioInscripcion, fechaFinalizacionInscripcion);
-		Aula aula = new Aula(215,84);
+		Aula aula = new Aula(215,84); 
 		
 		//Horario
 		ArrayList<Dia> diasCursada = new ArrayList<>();
@@ -50,8 +51,8 @@ public class TestCursoAlumno {
 		Curso curso = new Curso(codigoCurso, pb2,horario,ciclo);
 		curso.setAula(aula);
 		//Alumno
-		Date fechaNacimiento = new Date(2004,1,4);
-		Date fechaIngreso = new Date(2023,2,1);
+		LocalDate fechaNacimiento = LocalDate.of(2004,1,4);
+		LocalDate fechaIngreso = LocalDate.of(2023,2,1);
 		Alumno alumno = new Alumno(4323445,"Alan","Aruquipa",fechaNacimiento, fechaIngreso);
 		//Nota 
 		CursoAlumno asignacion = new CursoAlumno(1,curso,alumno);
@@ -75,10 +76,10 @@ public class TestCursoAlumno {
 		Materia pb2 = new Materia(2222,"PROGRAMACION BASICA 2");
 		pb2.agregarCorreleativa(pb1);
 		/*Ciclo Lectivo*/
-		Date fechaInicioCicloLectivo  = new Date(2023,3,1);	
-		Date fechaFinalizacionCicloLectivo = new Date(2023,6,14);
-		Date fechaInicioInscripcion = new Date(2023,2,1);
-		Date fechaFinalizacionInscripcion = new Date(2023,2,28);
+		LocalDate fechaInicioCicloLectivo  = LocalDate.of(2023,3,1);	
+		LocalDate fechaFinalizacionCicloLectivo = LocalDate.of(2023,6,14);
+		LocalDate fechaInicioInscripcion = LocalDate.of(2023,2,1);
+		LocalDate fechaFinalizacionInscripcion = LocalDate.of(2023,2,28);
 		
 		CicloLectivo ciclo = new CicloLectivo(fechaInicioCicloLectivo, fechaFinalizacionCicloLectivo,
 				fechaInicioInscripcion, fechaFinalizacionInscripcion);
@@ -95,8 +96,8 @@ public class TestCursoAlumno {
 		Curso curso = new Curso(codigoCurso, pb2,horario,ciclo);
 		curso.setAula(aula);
 		//Alumno
-		Date fechaNacimiento = new Date(2004,1,4);
-		Date fechaIngreso = new Date(2023,2,1);
+		LocalDate fechaNacimiento = LocalDate.of(2004,1,4);
+		LocalDate fechaIngreso = LocalDate.of(2023,2,1);
 		Alumno alumno = new Alumno(4323445,"Alan","Aruquipa",fechaNacimiento, fechaIngreso);
 		//Nota 
 		CursoAlumno asignacion = new CursoAlumno(1,curso,alumno);
@@ -119,10 +120,10 @@ public class TestCursoAlumno {
 		Materia pb2 = new Materia(2222,"PROGRAMACION BASICA 2");
 		pb2.agregarCorreleativa(pb1);
 		/*Ciclo Lectivo*/
-		Date fechaInicioCicloLectivo  = new Date(2023,3,1);	
-		Date fechaFinalizacionCicloLectivo = new Date(2023,6,14);
-		Date fechaInicioInscripcion = new Date(2023,2,1);
-		Date fechaFinalizacionInscripcion = new Date(2023,2,28);
+		LocalDate fechaInicioCicloLectivo  = LocalDate.of(2023,3,1);	
+		LocalDate fechaFinalizacionCicloLectivo = LocalDate.of(2023,6,14);
+		LocalDate fechaInicioInscripcion = LocalDate.of(2023,2,1);
+		LocalDate fechaFinalizacionInscripcion = LocalDate.of(2023,2,28);
 		
 		CicloLectivo ciclo = new CicloLectivo(fechaInicioCicloLectivo, fechaFinalizacionCicloLectivo,
 				fechaInicioInscripcion, fechaFinalizacionInscripcion);
@@ -140,8 +141,8 @@ public class TestCursoAlumno {
 		curso.setAula(aula);
 		//Alumno
 		//CLas
-		Date fechaNacimiento = new Date(2004,1,4);
-		Date fechaIngreso = new Date(2023,2,1);
+		LocalDate fechaNacimiento = LocalDate.of(2004,1,4);
+		LocalDate fechaIngreso = LocalDate.of(2023,2,1);
 		Alumno alumno = new Alumno(4323445,"Alan","Aruquipa",fechaNacimiento, fechaIngreso);
 		//Nota 
 		CursoAlumno asignacion = new CursoAlumno(1,curso,alumno);

@@ -13,13 +13,13 @@ public class CicloLectivo {
 
 		
 	
-		public CicloLectivo(LocalDate fechaInicioCicloLectivo, LocalDate fechaFinalizacionCicloLectivo, LocalDate fechaInicioInscripcion,
-				LocalDate fechaFinalizacionInscripcion) {
+		public CicloLectivo(LocalDate fechaInicioCicloLectivo2, LocalDate fechaFinalizacionCicloLectivo2, LocalDate fechaInicioInscripcion2,
+				LocalDate fechaFinalizacionInscripcion2) { 
 			this.id  = ++contId;
-			this.fechaInicioCicloLectivo = fechaInicioCicloLectivo;
-			this.fechaFinalizacionCicloLectivo  =fechaFinalizacionCicloLectivo;
-			this.fechaInicioInscripcion = fechaInicioInscripcion;
-			this.fechaFinalizacionInscripcion = fechaFinalizacionInscripcion;
+			this.fechaInicioCicloLectivo = fechaInicioCicloLectivo2;
+			this.fechaFinalizacionCicloLectivo  =fechaFinalizacionCicloLectivo2;
+			this.fechaInicioInscripcion = fechaInicioInscripcion2;
+			this.fechaFinalizacionInscripcion = fechaFinalizacionInscripcion2;
 		}
 
 		public Integer getID() {

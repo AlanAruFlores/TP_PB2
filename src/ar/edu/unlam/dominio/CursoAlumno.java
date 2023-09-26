@@ -77,8 +77,23 @@ public class CursoAlumno {
 		return aprobo;
 	}
 	
+	public boolean estaParaFinal() {
+		if(!estaCursando())
+			return false;
+		
+		ArrayList<Nota> notasMayores = obtenerNotasRelevantes();
+		for(Nota nota: notasMayores) {
+			if(nota.getPuntaje()<7)
+				return true;
+		}
+		
+		return false;
+		
+	}
+	
 	public boolean estaPromocionado() {	
-		return obtenerNotaFinal() >= 7;
+		return (obtenerNotaFinal() >= 7
+				)&& (estaParaFinal() != true);
 	}
 	
 	private Nota obtenerNotaMayorRecuperatorio(Nota parcial, Nota recu) {

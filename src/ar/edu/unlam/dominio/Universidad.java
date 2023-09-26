@@ -48,18 +48,23 @@ public class Universidad {
 		return false;
 	}
 
-	public Boolean crearCurso(Curso curso) {
+	public Boolean  crearCurso(Curso curso) {
 		Materia existeMateria = buscarMateriaPorCodigo(curso.getMateria().getCodigo());
 		Curso existeCurso = buscarCursoPorCodigo(curso.getCodigo());
-
-		if (existeMateria == null || existeCurso != null)
+		
+		if(existeMateria == null || existeCurso != null) 
 			return false;
-
-		Boolean resultado = verificarSiExisteCursoIdentico(curso);
-
-		if (resultado)
+		
+		//Verifico si el ciclo lectivo existe
+		Boolean existe = buscarCiclo(curso.getCiclo())!= null ? true : false;
+		if(!existe)
 			return false;
-
+		
+		//Verifico si existe 
+		Boolean resultado  = verificarSiExisteCursoIdentico(curso);
+		if(resultado)
+			return false;
+		
 		this.cursos.add(curso);
 		return true;
 	}
@@ -131,13 +136,12 @@ public class Universidad {
 		return notaObtenida;
 	}
 
-	public Double calcularPromedio(Integer idAlumno) {
-		Alumno alumno = buscarAlumnoPorDNI(idAlumno);
-		if (alumno == null)
+	public Double calcularPromedio(Integer idAlumno, Integer idCurso) {
+		CursoAlumno cursoDelalumno = buscarAsignacionAlumnoPorAlumnoCurso(new Alumno(idAlumno), new Curso(idCurso));
+		if (cursoDelalumno == null)
 			return 0.0;
 
-		ArrayList<CursoAlumno> cursosDelAlumno = buscarAsignacionAlumnoPorAlumno(alumno);
-		return obtenerPromedio(cursosDelAlumno);
+		return cursoDelalumno.obtenerNotaFinal();
 	}
 
 	public Boolean agregarProfesorACurso(Integer dniProfesor, Integer codigo) {
@@ -203,19 +207,22 @@ public class Universidad {
 	public Boolean registrarNota(Integer dniAlumno, Integer codCurso, Nota nota) {
 		Alumno alumno = buscarAlumnoPorDNI(dniAlumno);
 		Curso curso = buscarCursoPorCodigo(codCurso);
-
-		if (alumno == null || curso == null)
+		
+		if(alumno == null || curso == null)
 			return false;
-
-		CursoAlumno cursoAlumno = buscarAsignacionAlumnoPorAlumnoCurso(alumno, curso);
-
-		if (cursoAlumno == null)
+			
+		CursoAlumno cursoAlumno  = buscarAsignacionAlumnoPorAlumnoCurso(alumno, curso);
+		if(cursoAlumno == null)
 			return false;
-
+		
+		Boolean verificacion = debeUnaCorreleativaAFinal(cursoAlumno,nota);
+		
+		if(verificacion && nota.getPuntaje()>=7)
+			nota.setPuntaje(6);
+		
 		Boolean resultado = cursoAlumno.asignarNota(nota);
 		return resultado;
 	}
-
 	/**
 	 * Este metodo tiene como fun buscar una instancia del tipo CursoAlumno
 	 * 
@@ -390,25 +397,6 @@ public class Universidad {
 				return this.aulas.get(i);
 		}
 		return null;
-	}
-
-	private Double obtenerPromedio(ArrayList<CursoAlumno> cursosDelAlumno) {
-		Double suma = 0.0;
-		for (CursoAlumno ca : cursosDelAlumno) {
-			suma += ca.obtenerNotaFinal();
-		}
-
-		return (double) (suma / cursosDelAlumno.size());
-	}
-
-	private ArrayList<CursoAlumno> buscarAsignacionAlumnoPorAlumno(Alumno alumno) {
-		ArrayList<CursoAlumno> cursos = new ArrayList<>();
-
-		for (CursoAlumno ca : this.asignacionesCA)
-			if (ca.getAlumno().equals(alumno))
-				cursos.add(ca);
-
-		return cursos;
 	}
 
 	private Nota buscarNotaPorTipo(CursoAlumno ca, TipoNota tipoDeNota) {
@@ -690,5 +678,23 @@ public class Universidad {
 		}
 		return null;
 	}
+	
+	private Boolean debeUnaCorreleativaAFinal(CursoAlumno cursoAlumno, Nota nota) {
+		ArrayList<Materia> correleativas = cursoAlumno.getCurso().getMateria().getCorreleativas();
+		Integer dniAlumno = cursoAlumno.getAlumno().getDni();
+		
+		if(correleativas.size() == 0)
+			return false;
+		
+		for(Materia mat : correleativas) {
+			CursoAlumno ca = buscarAsignacionPorAlumnoMateria(mat, dniAlumno);
+			if(ca.estaPromocionado()!=true)
+					return true;
+		}
+		
+		return false;
+	}
+
+
 
 }

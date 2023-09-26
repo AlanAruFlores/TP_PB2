@@ -1681,14 +1681,137 @@ public class TestUniversidad {
 		assertEquals(7, infParcial2.getPuntaje().intValue());
 
 		// Inscribiendose a PW1 (En si no puede ya que no aprobo pb1)
-		LocalDate fechaInscripcion2 = LocalDate.of(2023, 5, 24);
+		LocalDate fechaInscripcion2 = LocalDate.of(2023, 8, 24);
 		Boolean resultado = universidad.inscribirAlumnoACurso(453232, 3030, fechaInscripcion2);
 		assertEquals(false, resultado);
 
 		CursoAlumno cursoDelAlumno = universidad.buscarAsignacionAlumnoPorAlumnoCurso(alumno, cursopw);
 		assertNull(cursoDelAlumno);
 	}
+	
+	@Test
+	public void queNoPuedaPromocionarSiElAlumnoDebeUnFinalCorreleativaDeLaMateria() {
+		Universidad universidad = new Universidad("UNLAM");
 
+		/* Ciclo lectivo PB1 Y INF GENERAL */
+		LocalDate fechaInicioCicloLectivo = LocalDate.of(2023, 2, 1);
+		LocalDate fechaFinalizacionCicloLectivo = LocalDate.of(2023, 7, 14);
+
+		// Fecha de inicio y finalizacion de inscripcion
+		LocalDate fechaInicioInscripcion = LocalDate.of(2023, 2, 1);
+		LocalDate fechaFinalizacionInscripcion = LocalDate.of(2023, 2, 28);
+
+		/* Ciclo lectivo PW1 */
+		LocalDate fechaInicioCicloLectivo2 = LocalDate.of(2023, 8, 11);
+		LocalDate fechaFinalizacionCicloLectivo2 = LocalDate.of(2023, 11, 14);
+
+		// Fecha de inicio y finalizacion de inscripcion
+		LocalDate fechaInicioInscripcion2 = LocalDate.of(2023, 8, 11);
+		LocalDate fechaFinalizacionInscripcion2 = LocalDate.of(2023, 8, 30);
+
+		CicloLectivo ciclo = new CicloLectivo(fechaInicioCicloLectivo, fechaFinalizacionCicloLectivo,
+				fechaInicioInscripcion, fechaFinalizacionInscripcion);
+
+		CicloLectivo ciclo2 = new CicloLectivo(fechaInicioCicloLectivo2, fechaFinalizacionCicloLectivo2,
+				fechaInicioInscripcion2, fechaFinalizacionInscripcion2);
+
+		// Horario
+		ArrayList<Dia> diasCursada = new ArrayList<Dia>();
+		diasCursada.add(Dia.LUNES);
+		Horario horario = new Horario(diasCursada, Turno.MAÑANA);
+
+		// Horario2
+		ArrayList<Dia> diasCursada2 = new ArrayList<Dia>();
+		diasCursada.add(Dia.JUEVES);
+		Horario horario2 = new Horario(diasCursada2, Turno.NOCHE);
+
+		// Horario3
+		ArrayList<Dia> diasCursada3 = new ArrayList<Dia>();
+		diasCursada.add(Dia.VIERNES);
+		Horario horario3 = new Horario(diasCursada3, Turno.NOCHE);
+
+		// Materia PB1
+		Materia pb1 = new Materia(1111, "PROGRAMACION BASICA 1");
+		Aula aulapb1 = new Aula(90, 30);
+		Curso cursoPb1 = new Curso(1010, pb1, horario, ciclo);
+
+		// Materia INF.GENERAL
+		Materia infGeneral = new Materia(2222, "INFORMATICA GENERAL");
+		Aula aulainf = new Aula(80, 30);
+		Curso cursoInf = new Curso(2020, infGeneral, horario2, ciclo);
+
+		// Materia Programacion Web 1
+		Materia pw1 = new Materia(3333, "Programacion Web 1");
+		Aula aulapw1 = new Aula(200, 80);
+		Curso cursopw = new Curso(3030, pw1, horario3, ciclo2);
+
+		// Alumno
+		LocalDate fechaNacimiento = LocalDate.of(2004, 1, 4);
+		LocalDate fechaIngreso = LocalDate.of(2023, 2, 1);
+		Alumno alumno = new Alumno(453232, "Alan", "Aruquipa", fechaNacimiento, fechaIngreso);
+
+		assertTrue(universidad.agregarCicloLectivo(ciclo));
+		assertTrue(universidad.registrarAlumno(alumno));
+		assertTrue(universidad.registrarMateria(pb1));
+		assertTrue(universidad.registrarAula(aulapb1));
+		assertTrue(universidad.crearCurso(cursoPb1));
+
+		assertTrue(universidad.registrarMateria(infGeneral));
+		assertTrue(universidad.registrarAula(aulainf));
+		assertTrue(universidad.crearCurso(cursoInf));
+
+		// Registrar programacion web 1
+		assertTrue(universidad.agregarCicloLectivo(ciclo2));
+		assertTrue(universidad.registrarMateria(pw1));
+		assertTrue(universidad.registrarAula(aulapw1));
+		assertTrue(universidad.asignarAMateriaCorreleativa(3333, 1111));
+		assertTrue(universidad.asignarAMateriaCorreleativa(3333, 2222));
+		assertTrue(universidad.crearCurso(cursopw));
+
+		assertTrue(universidad.asignarAulaAlCurso(90, 1010));
+		assertTrue(universidad.asignarAulaAlCurso(80, 2020));
+		assertTrue(universidad.asignarAulaAlCurso(200, 3030));
+
+		// Registrando notas de PB1 y InfGeneral
+		LocalDate fechaInscripcion = LocalDate.of(2023, 2, 24);
+		assertTrue(universidad.inscribirAlumnoACurso(453232, 1010, fechaInscripcion));
+		assertTrue(universidad.inscribirAlumnoACurso(453232, 2020, fechaInscripcion));
+
+		//Esta para final
+		universidad.registrarNota(453232, 1010, new Nota(TipoNota.PRIMER_PARCIAL, 6));
+		universidad.registrarNota(453232, 1010, new Nota(TipoNota.SEGUNDO_PARCIAL, 10));
+		universidad.registrarNota(453232, 1010, new Nota(TipoNota.RECUPERATORIO_PRIMER_PARCIAL, 5));
+		
+		Nota pParcialPb1 = universidad.obtenerNota(453232, 1111, TipoNota.PRIMER_PARCIAL);
+		Nota sParcialPb1 = universidad.obtenerNota(453232, 1111, TipoNota.SEGUNDO_PARCIAL);
+		Nota pRecuperatorio = universidad.obtenerNota(453232, 1111, TipoNota.RECUPERATORIO_PRIMER_PARCIAL);
+
+		assertEquals(6, pParcialPb1.getPuntaje().intValue());
+		assertEquals(10, sParcialPb1.getPuntaje().intValue());
+		assertEquals(5, pRecuperatorio.getPuntaje().intValue());
+
+		universidad.registrarNota(453232, 2020, new Nota(TipoNota.PRIMER_PARCIAL, 8));
+		universidad.registrarNota(453232, 2020, new Nota(TipoNota.SEGUNDO_PARCIAL, 7));
+
+		Nota infParcial1 = universidad.obtenerNota(453232, 2222, TipoNota.PRIMER_PARCIAL);
+		Nota infParcial2 = universidad.obtenerNota(453232, 2222, TipoNota.SEGUNDO_PARCIAL);
+
+		assertEquals(8, infParcial1.getPuntaje().intValue());
+		assertEquals(7, infParcial2.getPuntaje().intValue());
+
+		LocalDate fechaInscripcion2 = LocalDate.of(2023, 8, 24);
+		Boolean resultado = universidad.inscribirAlumnoACurso(453232, 3030, fechaInscripcion2);
+		assertEquals(true, resultado);
+
+		CursoAlumno cursoDelAlumno = universidad.buscarAsignacionAlumnoPorAlumnoCurso(alumno, cursopw);
+		assertNotNull(cursoDelAlumno);
+				
+		universidad.registrarNota(453232, 3030, new Nota(TipoNota.PRIMER_PARCIAL, 8));
+		universidad.registrarNota(453232, 3030, new Nota(TipoNota.SEGUNDO_PARCIAL, 10));	
+		
+		assertEquals(6, universidad.calcularPromedio(453232, 3030).intValue()); //NO PROMOCIONA
+	}
+	
 	@Test
 	public void queNoSePuedaAgregarMasAlumnosSiElAulaEstaLleno() {
 		Universidad universidad = new Universidad("UNLAM");
@@ -2359,8 +2482,8 @@ public class TestUniversidad {
 		Universidad uni = new Universidad("UNLAM");
 		ArrayList<Materia> planDeEstudios = new ArrayList<>();
 		/* Ciclo lectivo */
-		LocalDate fechaInicioCicloLectivo = LocalDate.of(2023, 3, 1); 
-		LocalDate fechaFinalizacionCicloLectivo = LocalDate.of(2023, 6, 14);
+		LocalDate fechaInicioCicloLectivo = LocalDate.of(2023, 2, 1); 
+		LocalDate fechaFinalizacionCicloLectivo = LocalDate.of(2023, 7, 14);
 
 		// Fecha de inicio y finalizacion de inscripcion
 		LocalDate fechaInicioInscripcion = LocalDate.of(2023, 2, 1);
@@ -2395,6 +2518,8 @@ public class TestUniversidad {
 		LocalDate fechaIngreso = LocalDate.of(2023, 2, 1);
 		Alumno alumno = new Alumno(43506696, "Gonzalo", "Viale", fechaNacimiento, fechaIngreso);
 
+		
+		uni.agregarCicloLectivo(ciclo);
 		uni.registrarAlumno(alumno);
 		uni.registrarMateria(pb1);
 		uni.registrarAula(aulaPB1);
@@ -2433,8 +2558,8 @@ public class TestUniversidad {
 		Universidad uni = new Universidad("UNLAM");
 		ArrayList<Materia> planDeEstudios = new ArrayList<>();
 		/* Ciclo lectivo */
-		LocalDate fechaInicioCicloLectivo = LocalDate.of(2023, 3, 1);
-		LocalDate fechaFinalizacionCicloLectivo = LocalDate.of(2023, 6, 14);
+		LocalDate fechaInicioCicloLectivo = LocalDate.of(2023, 2, 1);
+		LocalDate fechaFinalizacionCicloLectivo = LocalDate.of(2023, 7, 14);
 
 		// Fecha de inicio y finalizacion de inscripcion
 		LocalDate fechaInicioInscripcion = LocalDate.of(2023, 2, 1);
@@ -2469,6 +2594,7 @@ public class TestUniversidad {
 		LocalDate fechaIngreso = LocalDate.of(2023, 2, 1);
 		Alumno alumno = new Alumno(43506696, "Gonzalo", "Viale", fechaNacimiento, fechaIngreso);
 
+		uni.agregarCicloLectivo(ciclo);
 		uni.registrarAlumno(alumno);
 		uni.registrarMateria(pb1);
 		uni.registrarAula(aulaPB1);

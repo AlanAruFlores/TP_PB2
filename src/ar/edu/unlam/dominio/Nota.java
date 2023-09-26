@@ -23,6 +23,9 @@ public class Nota {
 		return this.tipo;
 	}
 
+	public void setPuntaje(Integer puntaje) {
+		this.puntaje = puntaje;
+	}
 	public Boolean asignarPuntaje(Integer puntaje) {
 		if(this.puntaje != 0) //Quiere decir que se asigno ya una nota anterior
 			return false;
